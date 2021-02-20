@@ -1,2 +1,2 @@
-# helmproj
+# Helmproj
 Preprocessor for Helm Charts
