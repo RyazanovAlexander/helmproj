@@ -1,0 +1,25 @@
+values:
+  scalar: 1
+  prod: prod-value
+  array:
+    - node1
+    - node2
+  map:
+    - node1: val1
+    - node2: val2
+  tree:
+    scalar: tree-scalar
+  frontend:
+    content: |-
+      frontend project content
+  backend:
+    content: |-
+      backend project content
+charts:
+  - name: rendered-frontend
+    path: ./charts/frontend
+    appVersion: 1.0.1
+  - name: rendered-backend
+    path: ./charts/backend
+    appVersion: 1.0.2
+outputFolder: ./rendered
