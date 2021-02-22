@@ -95,4 +95,4 @@ example-clear:
 .PHONY: build-push-di
 build-push-di:
 	@docker build -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
-	@docker push aryazanov/helmproj:$(DTAG)
+	@docker push $(DRNAME):$(DTAG)
