@@ -1,0 +1,1 @@
+Hello CLI. Project file path: ./project.yaml

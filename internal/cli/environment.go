@@ -22,36 +22,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package main
+package cli
 
 import (
-	"fmt"
-	"log"
 	"os"
+	"strconv"
 
-	"github.com/RyazanovAlexander/helmproj/v1/cmd"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/ilog"
+	"github.com/spf13/pflag"
 )
 
-var Version string
-var Buildtime string
+// Settings are application settings
+var Settings = New()
 
-func init() {
-	log.SetFlags(log.Lshortfile)
+// EnvSettings describes all of the environment settings.
+type EnvSettings struct {
+	// Debug indicates whether or not Helm is running in Debug mode.
+	Debug bool
 }
 
-func main() {
-	os.Stdout.WriteString(fmt.Sprintf("Version: %s\n", Version))
-	os.Stdout.WriteString(fmt.Sprintf("Buildtime: %s\n", Buildtime))
+// New creates new EnvSettings
+func New() *EnvSettings {
+	env := &EnvSettings{}
+	env.Debug, _ = strconv.ParseBool(os.Getenv("HELMPROJ_DEBUG"))
 
-	cmd, err := cmd.NewRootCmd(os.Stdout, os.Args[1:])
-	if err != nil {
-		ilog.WarningF("%+v", err)
-		os.Exit(1)
-	}
+	return env
+}
 
-	if err := cmd.Execute(); err != nil {
-		ilog.DebugF("%+v", err)
-		os.Exit(1)
-	}
+// AddFlags binds flags to the given flagset.
+func (s *EnvSettings) AddFlags(fs *pflag.FlagSet) {
+	fs.BoolVar(&s.Debug, "debug", s.Debug, "enable verbose output")
 }

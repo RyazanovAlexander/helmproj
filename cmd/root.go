@@ -26,39 +26,54 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
 )
 
-var (
-	// Used for flags.
-	projFile string
+var globalUsage = `This application is a tool for preprocessing values.yaml and Chart.yaml files.
 
-	rootCmd = &cobra.Command{
+Common actions for Helmproj:
+
+- helmproj:                           preprocessing helm charts based on information from the ./project.yaml file
+- helmproj -f ./path/to/project.yaml: preprocessing helm charts based on information from the project.yaml file located at the specified path
+
+Environment variables:
+
+| Name                               | Description                                                                       |
+|------------------------------------|-----------------------------------------------------------------------------------|
+| $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode                         |
+`
+
+// The path to the project file, passed as a command line argument
+var projFilePath string
+
+// NewRootCmd creates new root cmd
+func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
+	cmd := &cobra.Command{
 		Use:   "helmproj",
 		Short: "Preprocessor for Helm Charts",
-		Long:  `This application is a tool for preprocessing values.yaml and Chart.yaml files.`,
-		Run:   func(cmd *cobra.Command, args []string) { fmt.Println("Hello CLI") },
+		Long:  globalUsage,
+		Run:   func(cmd *cobra.Command, args []string) { runRootCmd(out, args) },
 	}
-)
 
-// Execute executes the root command.
-func Execute() error {
-	return rootCmd.Execute()
+	flags := cmd.PersistentFlags()
+	flags.StringVarP(&projFilePath, "file", "f", "./project.yaml", "path to project file")
+	flags.Parse(args)
+
+	cli.Settings.AddFlags(flags)
+
+	// Add subcommands
+	cmd.AddCommand(
+		newVersionCmd(out),
+	)
+
+	return cmd, nil
 }
 
-func init() {
-	cobra.OnInitialize(initConfig)
-
-	rootCmd.PersistentFlags().StringVarP(&projFile, "config", "c", "./project.yaml", "path to project file")
-	viper.SetDefault("config", "./project.yaml")
-}
-
-func initConfig() {
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+func runRootCmd(out io.Writer, args []string) {
+	a := fmt.Sprintf("Hello CLI. Project file path: %s", projFilePath)
+	fmt.Fprintln(out, a)
 }

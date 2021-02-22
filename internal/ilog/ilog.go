@@ -22,36 +22,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package main
+package ilog
 
 import (
 	"fmt"
 	"log"
 	"os"
 
-	"github.com/RyazanovAlexander/helmproj/v1/cmd"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/ilog"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
 )
 
-var Version string
-var Buildtime string
-
-func init() {
-	log.SetFlags(log.Lshortfile)
+// Debug message template
+func DebugF(format string, v ...interface{}) {
+	if cli.Settings.Debug {
+		format = fmt.Sprintf("[debug] %s\n", format)
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
 }
 
-func main() {
-	os.Stdout.WriteString(fmt.Sprintf("Version: %s\n", Version))
-	os.Stdout.WriteString(fmt.Sprintf("Buildtime: %s\n", Buildtime))
-
-	cmd, err := cmd.NewRootCmd(os.Stdout, os.Args[1:])
-	if err != nil {
-		ilog.WarningF("%+v", err)
-		os.Exit(1)
-	}
-
-	if err := cmd.Execute(); err != nil {
-		ilog.DebugF("%+v", err)
-		os.Exit(1)
-	}
+// Warning message template
+func WarningF(format string, v ...interface{}) {
+	format = fmt.Sprintf("WARNING: %s\n", format)
+	fmt.Fprintf(os.Stderr, format, v...)
 }

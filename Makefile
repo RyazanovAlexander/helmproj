@@ -21,11 +21,22 @@ PKG        := ./...
 TESTS      := .
 TESTFLAGS  :=
 TAGS       :=
-LDFLAGS    := -w -s
-GOFLAGS    :=
+
+VERSION := $(shell git rev-parse --short HEAD)
+BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+GOLDFLAGS += -X main.Version=$(VERSION)
+GOLDFLAGS += -X main.Buildtime=$(BUILDTIME)
+GOFLAGS   = -ldflags '$(GOLDFLAGS) -w -s'
 
 # Rebuild the buinary if any of these files change
 SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
+
+# ------------------------------------------------------------------------------
+#  run
+
+run: build
+	$(BINDIR)/$(BINNAME)
 
 # ------------------------------------------------------------------------------
 #  build
@@ -34,7 +45,7 @@ SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
 build: $(BINDIR)/$(BINNAME)
 
 $(BINDIR)/$(BINNAME): $(SRC)
-	GO111MODULE=on go build $(GOFLAGS) -tags '$(TAGS)' -ldflags '$(LDFLAGS)' -o $(BINDIR)/$(BINNAME) .
+	GO111MODULE=on go build $(GOFLAGS) -tags '$(TAGS)' -o $(BINDIR)/$(BINNAME) .
 
 # ------------------------------------------------------------------------------
 #  install

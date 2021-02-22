@@ -23,3 +23,19 @@ SOFTWARE.
 */
 
 package cmd
+
+import (
+	"testing"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/test"
+)
+
+func TestVersion(t *testing.T) {
+	tests := []test.CmdTestCase{{
+		Name:   "default",
+		Cmd:    "version",
+		Golden: "output/version.txt",
+	}}
+
+	test.RunTestCmd(t, tests)
+}

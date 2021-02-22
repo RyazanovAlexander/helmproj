@@ -25,33 +25,11 @@ SOFTWARE.
 package main
 
 import (
-	"fmt"
-	"log"
 	"os"
-
-	"github.com/RyazanovAlexander/helmproj/v1/cmd"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/ilog"
+	"testing"
 )
 
-var Version string
-var Buildtime string
-
-func init() {
-	log.SetFlags(log.Lshortfile)
-}
-
-func main() {
-	os.Stdout.WriteString(fmt.Sprintf("Version: %s\n", Version))
-	os.Stdout.WriteString(fmt.Sprintf("Buildtime: %s\n", Buildtime))
-
-	cmd, err := cmd.NewRootCmd(os.Stdout, os.Args[1:])
-	if err != nil {
-		ilog.WarningF("%+v", err)
-		os.Exit(1)
-	}
-
-	if err := cmd.Execute(); err != nil {
-		ilog.DebugF("%+v", err)
-		os.Exit(1)
-	}
+func TestMainProgram(t *testing.T) {
+	os.Args = []string{"helmproj"}
+	main()
 }
