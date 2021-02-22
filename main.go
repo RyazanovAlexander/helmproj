@@ -30,7 +30,7 @@ import (
 	"os"
 
 	"github.com/RyazanovAlexander/helmproj/v1/cmd"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/ilog"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/flog"
 )
 
 var Version string
@@ -46,12 +46,12 @@ func main() {
 
 	cmd, err := cmd.NewRootCmd(os.Stdout, os.Args[1:])
 	if err != nil {
-		ilog.WarningF("%+v", err)
+		flog.WarningF("%+v", err)
 		os.Exit(1)
 	}
 
 	if err := cmd.Execute(); err != nil {
-		ilog.DebugF("%+v", err)
+		flog.DebugF("%+v", err)
 		os.Exit(1)
 	}
 }
