@@ -1,0 +1,17 @@
+scalar: value #{{ .Project.scalar }}
+
+tree:
+  scalar: value #{{ .Project.tree.scalar }}
+  #{{ .Project.backend.content }}
+  content: |-
+    backend content
+
+array: #{{ .Project.array }}
+  - value1
+  - value2
+
+map: #{{ .Project.map }}
+  - key1: val1
+  - key2: val2
+
+override: dev

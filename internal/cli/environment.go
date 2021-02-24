@@ -1,3 +1,4 @@
+/*
 MIT License
 
 Copyright The Helmproj Authors.
@@ -19,3 +20,35 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+package cli
+
+import (
+	"os"
+	"strconv"
+
+	"github.com/spf13/pflag"
+)
+
+// Settings are application settings
+var Settings = New()
+
+// EnvSettings describes all of the environment settings.
+type EnvSettings struct {
+	// Debug indicates whether or not Helm is running in Debug mode.
+	Debug bool
+}
+
+// New creates new EnvSettings
+func New() *EnvSettings {
+	env := &EnvSettings{}
+	env.Debug, _ = strconv.ParseBool(os.Getenv("HELMPROJ_DEBUG"))
+
+	return env
+}
+
+// AddFlags binds flags to the given flagset.
+func (s *EnvSettings) AddFlags(fs *pflag.FlagSet) {
+	fs.BoolVar(&s.Debug, "debug", s.Debug, "enable verbose output")
+}

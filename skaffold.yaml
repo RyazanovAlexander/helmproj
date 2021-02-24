@@ -1,0 +1,13 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+deploy:
+  helm:
+    releases:
+    - name: frontend
+      namespace: example
+      createNamespace: true
+      chartPath: examples/rendered/frontend
+    - name: backend
+      namespace: example
+      createNamespace: true
+      chartPath: examples/rendered/backend

@@ -1,3 +1,4 @@
+/*
 MIT License
 
 Copyright The Helmproj Authors.
@@ -19,3 +20,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+package cmd
+
+import (
+	"fmt"
+	"io"
+
+	"github.com/spf13/cobra"
+)
+
+var (
+	version = "v1.0.0"
+)
+
+func newVersionCmd(out io.Writer) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "version",
+		Short: "Show the version for Helmproj.",
+		Long:  `Show the version for Helmproj.`,
+		Run:   func(cmd *cobra.Command, args []string) { runVersionCmd(out, args) },
+	}
+
+	return cmd
+}
+
+func runVersionCmd(out io.Writer, args []string) {
+	fmt.Fprintln(out, version)
+}

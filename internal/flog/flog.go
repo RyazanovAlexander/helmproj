@@ -1,3 +1,4 @@
+/*
 MIT License
 
 Copyright The Helmproj Authors.
@@ -19,3 +20,28 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+package flog
+
+import (
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
+)
+
+// Debug message template
+func DebugF(format string, v ...interface{}) {
+	if cli.Settings.Debug {
+		format = fmt.Sprintf("[debug] %s\n", format)
+		log.Output(2, fmt.Sprintf(format, v...))
+	}
+}
+
+// Warning message template
+func WarningF(format string, v ...interface{}) {
+	format = fmt.Sprintf("WARNING: %s\n", format)
+	fmt.Fprintf(os.Stderr, format, v...)
+}
