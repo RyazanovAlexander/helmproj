@@ -22,4 +22,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package flog
+package version
+
+import (
+	"encoding/json"
+	"runtime"
+	"testing"
+	"time"
+)
+
+func TestGetBuildInfo(t *testing.T) {
+	Version = "v.test"
+	Buildtime = time.Now().String()
+	GitShortSHA = "ABC123"
+
+	expected := BuildInfo{
+		Version:     Version,
+		GitShortSHA: GitShortSHA,
+		Buildtime:   Buildtime,
+		GoVersion:   runtime.Version(),
+	}
+
+	expectedBytes, err := json.Marshal(expected)
+	if err != nil {
+		t.Errorf("Failed to marshal expected struct: %v", err)
+	}
+
+	got := GetBuildInfo()
+	gotBytes, err := json.Marshal(got)
+	if err != nil {
+		t.Errorf("Failed to marshal go struct: %v", err)
+	}
+
+	expectedString := string(expectedBytes)
+	gotString := string(gotBytes)
+
+	if expectedString != gotString {
+		t.Errorf("Got %v, expected %v", gotString, expectedString)
+	}
+}

@@ -27,15 +27,19 @@ package cmd
 import (
 	"testing"
 
-	"github.com/RyazanovAlexander/helmproj/v1/internal/test"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/version"
 )
 
 func TestVersion(t *testing.T) {
-	tests := []test.CmdTestCase{{
+	tests := []TestCase{{
 		Name:   "default",
 		Cmd:    "version",
 		Golden: "output/version.txt",
 	}}
 
-	test.RunTestCmd(t, tests)
+	version.Version = "1.0.0"
+	version.Buildtime = "2021-02-24T11:45:00Z"
+	version.GitShortSHA = "4666021"
+
+	RunTestCmd(t, tests)
 }

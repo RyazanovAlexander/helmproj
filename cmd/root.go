@@ -47,11 +47,14 @@ Environment variables:
 | $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode                         |
 `
 
-// The path to the project file, passed as a command line argument
+// DefaultProjectFilePath is the path to the default project file.
+const DefaultProjectFilePath = "./project.yaml"
+
+// The path to the project file, passed as a command line argument.
 var projFilePath string
 
-// NewRootCmd creates new root cmd
-func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
+// NewRootCmd creates new root cmd.
+func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "helmproj",
 		Short: "Preprocessor for Helm Charts",
@@ -60,7 +63,7 @@ func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
 	}
 
 	flags := cmd.PersistentFlags()
-	flags.StringVarP(&projFilePath, "file", "f", "./project.yaml", "path to project file")
+	flags.StringVarP(&projFilePath, "file", "f", DefaultProjectFilePath, "path to project file")
 	flags.Parse(args)
 
 	cli.Settings.AddFlags(flags)
@@ -70,10 +73,9 @@ func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
 		newVersionCmd(out),
 	)
 
-	return cmd, nil
+	return cmd
 }
 
 func runRootCmd(out io.Writer, args []string) {
-	a := fmt.Sprintf("Hello CLI. Project file path: %s", projFilePath)
-	fmt.Fprintln(out, a)
+	fmt.Fprintln(out, fmt.Sprintf("Hello CLI. Project file path: %s", projFilePath))
 }

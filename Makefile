@@ -2,9 +2,14 @@ BINDIR       := $(CURDIR)/bin
 INSTALL_PATH ?= /usr/local/bin
 BINNAME      ?= helmproj
 BUILDDIR     ?= build
+BUILDTIME    := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+# git
+LASTTAG     := $(shell git tag --sort=committerdate | tail -1)
+GITSHORTSHA := $(shell git rev-parse --short HEAD)
 
 # docker option
-DTAG   ?= 1.0.0
+DTAG   ?= $(LASTTAG)
 DFNAME ?= Dockerfile
 DRNAME ?= docker.io/aryazanov/helmproj
 
@@ -22,20 +27,15 @@ TESTS      := .
 TESTFLAGS  :=
 TAGS       :=
 
-VERSION := $(shell git rev-parse --short HEAD)
-BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
-
-GOLDFLAGS += -X main.Version=$(VERSION)
-GOLDFLAGS += -X main.Buildtime=$(BUILDTIME)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.Version=$(LASTTAG)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.GitShortSHA=$(GITSHORTSHA)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.Buildtime=$(BUILDTIME)
 GOLDFLAGS += -w
 GOLDFLAGS += -s
 GOFLAGS   = -ldflags '$(GOLDFLAGS)'
 
 GOOS   := linux
 GOARCH := amd64
-
-# git
-LASTTAG := $(shell git tag --sort=committerdate | tail -1)
 
 # Rebuild the buinary if any of these files change
 SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
@@ -70,6 +70,14 @@ test:
 	@echo
 	@echo "==> Running unit tests <=="
 	GO111MODULE=on go test $(GOFLAGS) -run $(TESTS) $(PKG) $(TESTFLAGS)
+
+# ------------------------------------------------------------------------------
+#  cover
+
+.PHONY: cover
+cover:
+	go test -v -coverpkg=./... -coverprofile=profile ./...
+	go tool cover -html=profile
 
 # ------------------------------------------------------------------------------
 #  clean

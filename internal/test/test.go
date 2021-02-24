@@ -20,7 +20,9 @@ import (
 	"bytes"
 	"flag"
 	"io/ioutil"
+	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 )
@@ -38,6 +40,18 @@ type TestingT interface {
 // HelperT describes a test with a helper function
 type HelperT interface {
 	Helper()
+}
+
+// ResetEnv resets the value of environment variables
+func ResetEnv() func() {
+	origEnv := os.Environ()
+	return func() {
+		os.Clearenv()
+		for _, pair := range origEnv {
+			kv := strings.SplitN(pair, "=", 2)
+			os.Setenv(kv[0], kv[1])
+		}
+	}
 }
 
 // AssertGoldenBytes asserts that the give actual content matches the contents of the given filename
