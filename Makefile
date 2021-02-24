@@ -27,7 +27,15 @@ BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 GOLDFLAGS += -X main.Version=$(VERSION)
 GOLDFLAGS += -X main.Buildtime=$(BUILDTIME)
-GOFLAGS   = -ldflags '$(GOLDFLAGS) -w -s'
+GOLDFLAGS += -w
+GOLDFLAGS += -s
+GOFLAGS   = -ldflags '$(GOLDFLAGS)'
+
+GOOS   := linux
+GOARCH := amd64
+
+# git
+LASTTAG := $(shell git tag --sort=committerdate | tail -1)
 
 # Rebuild the buinary if any of these files change
 SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
@@ -94,5 +102,5 @@ example-clear:
 
 .PHONY: build-push-di
 build-push-di:
-	@docker build -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
+	@docker build --build-arg LDFLAGS="$(GOLDFLAGS)" --build-arg GOOS=$(GOOS) --build-arg GOARCH=$(GOARCH) -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
 	@docker push $(DRNAME):$(DTAG)
