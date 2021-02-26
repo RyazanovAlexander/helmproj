@@ -1,17 +1,24 @@
-scalar: value #{{ .Project.scalar }}
+# {{ .Project.scalar }}
+# This comment with {{ .Project.scalar }} will be ignored
+scalar: value
 
 tree:
-  scalar: value #{{ .Project.tree.scalar }}
-  #{{ .Project.backend.content }}
+  # {{ .Project.tree.scalar }}
+  scalar: value
+  # {{ .Project.backend.content }}
   content: |-
     backend content
+  # {{ .Project.array }}
+  array:
+    - one-value
 
-array: #{{ .Project.array }}
+# {{ .Project.array }}
+array:
   - value1
   - value2
 
-map: #{{ .Project.map }}
+# {{ .Project.map }}
+map:
+  # {{ .Project.will.be.ignored }} you cannot use re-staging below the tree
   - key1: val1
   - key2: val2
-
-override: dev

@@ -25,12 +25,12 @@ SOFTWARE.
 package cmd
 
 import (
-	"fmt"
 	"io"
 
 	"github.com/spf13/cobra"
 
 	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/preprocessor"
 )
 
 var globalUsage = `This application is a tool for preprocessing values.yaml and Chart.yaml files.
@@ -77,5 +77,7 @@ func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 }
 
 func runRootCmd(out io.Writer, args []string) {
-	fmt.Fprintln(out, fmt.Sprintf("Hello CLI. Project file path: %s", projFilePath))
+	//preprocessor.Run(projFilePath)
+	//preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\charts\\project.yaml")
+	preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\project.yaml")
 }

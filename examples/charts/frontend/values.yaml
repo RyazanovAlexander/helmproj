@@ -1,16 +1,20 @@
-scalar: value #{{ .Project.scalar }}
+# {{ .Project.scalar }}
+scalar: value
 
 tree:
-  scalar: value #{{ .Project.tree.scalar }}
-  #{{ .Project.frontend.content }}
+  # {{ .Project.tree.scalar }}
+  scalar: value
+  # {{ .Project.frontend.content }}
   content: |-
     frontend content
 
-array: #{{ .Project.array }}
+# {{ .Project.array }}
+array:
   - value1
   - value2
 
-map: #{{ .Project.map }}
+# {{ .Project.map }}
+map:
   - key1: val1
   - key2: val2
 

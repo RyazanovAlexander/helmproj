@@ -1,20 +1,30 @@
 values:
-  scalar: 1
+  # We can insert comments here
+  scalar: 1 # ... and here
   prod: prod-value
   array:
     - node1
     - node2
   map:
     - node1: val1
+      prop11: pv1
+      prop12: pv2
     - node2: val2
+      prop21: pv21
+      prop22: pv22
   tree:
     scalar: tree-scalar
   frontend:
     content: |-
-      frontend project content
+      frontend project content line 1
+      frontend project content line 2
   backend:
     content: |-
-      backend project content
+      backend project content line 1
+      backend project content line 2
+      backend project content line 3
+      backend project content line 4
+      backend project content line 5
 charts:
   - name: rendered-frontend
     path: ./charts/frontend
