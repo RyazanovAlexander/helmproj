@@ -22,38 +22,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package preprocessor
-
-import (
-	"github.com/RyazanovAlexander/helmproj/v1/internal/chart"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/project"
-)
-
-// Run runs preprocessing
-func Run(projectFilePath string) error {
-	project, err := project.LoadProjectFile(projectFilePath)
-	if err != nil {
-		return err
-	}
-
-	for _, projectChart := range project.Charts {
-		chart, err := chart.LoadChart(projectChart.Path, projectChart.AdditionlValues)
-		if err != nil {
-			return err
-		}
-
-		if err = chart.CopyTo(project.OutputFolder); err != nil {
-			return err
-		}
-
-		if err = chart.SubstituteValues(project.OutputFolder, project.Values); err != nil {
-			return err
-		}
-
-		if err = chart.SubstituteAppVersion(projectChart.AppVersion); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
+package chart

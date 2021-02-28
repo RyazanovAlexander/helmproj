@@ -79,5 +79,5 @@ func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 func runRootCmd(out io.Writer, args []string) {
 	//preprocessor.Run(projFilePath)
 	//preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\charts\\project.yaml")
-	preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\project.yaml")
+	preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\project.yaml") // REMOVE
 }

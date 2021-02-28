@@ -1,35 +1,28 @@
 values:
-  # We can insert comments here
-  scalar: 1 # ... and here
-  prod: prod-value
+  scalar: 1
+  tree:
+    scalar: tree-scalar
   array:
     - node1
     - node2
   map:
     - node1: val1
-      prop11: pv1
-      prop12: pv2
+      prop11: pv11
     - node2: val2
       prop21: pv21
-      prop22: pv22
-  tree:
-    scalar: tree-scalar
   frontend:
-    content: |-
-      frontend project content line 1
-      frontend project content line 2
+    prod: frontend-prod-value
   backend:
-    content: |-
-      backend project content line 1
-      backend project content line 2
-      backend project content line 3
-      backend project content line 4
-      backend project content line 5
+    prod: backend-prod-value
 charts:
   - name: rendered-frontend
-    path: ./charts/frontend
+    path: C:\\SourceCode2\\helmproj\\examples\\charts\\frontend
+    additionlValues:
+      - values.prod.yaml
     appVersion: 1.0.1
   - name: rendered-backend
-    path: ./charts/backend
+    path: C:\\SourceCode2\\helmproj\\examples\\charts\\backend
+    additionlValues:
+      - values.prod.yaml
     appVersion: 1.0.2
-outputFolder: ./rendered
+outputFolder: C:\\rendered

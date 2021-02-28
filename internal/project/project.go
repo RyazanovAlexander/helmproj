@@ -22,38 +22,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package preprocessor
+package project
 
 import (
-	"github.com/RyazanovAlexander/helmproj/v1/internal/chart"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/project"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/yaml"
 )
 
-// Run runs preprocessing
-func Run(projectFilePath string) error {
-	project, err := project.LoadProjectFile(projectFilePath)
-	if err != nil {
-		return err
+// Project describes the structure of the project file.
+type Project struct {
+	Values map[string]interface{} `yaml:"values"`
+	Charts []struct {
+		Name            string   `yaml:"name"`
+		Path            string   `yaml:"path"`
+		AppVersion      string   `yaml:"appVersion"`
+		AdditionlValues []string `yaml:"additionlValues"`
+	} `yaml:"charts"`
+	OutputFolder string `yaml:"outputFolder"`
+}
+
+// LoadProjectFile returns the model of the project file.
+func LoadProjectFile(filePath string) (*Project, error) {
+	project := Project{}
+	if err := yaml.UnmarshalFromFile(filePath, &project); err != nil {
+		return nil, err
 	}
 
-	for _, projectChart := range project.Charts {
-		chart, err := chart.LoadChart(projectChart.Path, projectChart.AdditionlValues)
-		if err != nil {
-			return err
-		}
-
-		if err = chart.CopyTo(project.OutputFolder); err != nil {
-			return err
-		}
-
-		if err = chart.SubstituteValues(project.OutputFolder, project.Values); err != nil {
-			return err
-		}
-
-		if err = chart.SubstituteAppVersion(projectChart.AppVersion); err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return &project, nil
 }

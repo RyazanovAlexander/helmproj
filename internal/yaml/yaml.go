@@ -22,37 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package preprocessor
+package yaml
 
 import (
-	"github.com/RyazanovAlexander/helmproj/v1/internal/chart"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/project"
+	"io/ioutil"
+
+	"gopkg.in/yaml.v3"
 )
 
-// Run runs preprocessing
-func Run(projectFilePath string) error {
-	project, err := project.LoadProjectFile(projectFilePath)
+// UnmarshalFromFile deserializes the yaml file to the specified data type.
+func UnmarshalFromFile(filePath string, object interface{}) error {
+	sourceYaml, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return err
 	}
 
-	for _, projectChart := range project.Charts {
-		chart, err := chart.LoadChart(projectChart.Path, projectChart.AdditionlValues)
-		if err != nil {
-			return err
-		}
+	err = yaml.Unmarshal(sourceYaml, object)
+	if err != nil {
+		return err
+	}
 
-		if err = chart.CopyTo(project.OutputFolder); err != nil {
-			return err
-		}
+	return nil
+}
 
-		if err = chart.SubstituteValues(project.OutputFolder, project.Values); err != nil {
-			return err
-		}
+// MarshalToFile serialises the specified data type to the yaml file.
+func MarshalToFile(filePath string, object interface{}) error {
+	bytes, err := yaml.Marshal(object)
+	if err != nil {
+		return err
+	}
 
-		if err = chart.SubstituteAppVersion(projectChart.AppVersion); err != nil {
-			return err
-		}
+	if err := ioutil.WriteFile(filePath, bytes, 0644); err != nil {
+		return err
 	}
 
 	return nil
