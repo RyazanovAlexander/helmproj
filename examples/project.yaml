@@ -16,13 +16,13 @@ values:
     prod: backend-prod-value
 charts:
   - name: rendered-frontend
-    path: C:\\SourceCode2\\helmproj\\examples\\charts\\frontend
+    path: ./examples/charts/frontend
     additionlValues:
       - values.prod.yaml
     appVersion: 1.0.1
   - name: rendered-backend
-    path: C:\\SourceCode2\\helmproj\\examples\\charts\\backend
+    path: ./examples/charts/backend
     additionlValues:
       - values.prod.yaml
     appVersion: 1.0.2
-outputFolder: C:\\rendered
+outputFolder: ./tmp/rendered

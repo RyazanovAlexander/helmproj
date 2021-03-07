@@ -26,6 +26,7 @@ package preprocessor
 
 import (
 	"github.com/RyazanovAlexander/helmproj/v1/internal/chart"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/project"
 )
 
@@ -36,8 +37,10 @@ func Run(projectFilePath string) error {
 		return err
 	}
 
+	io.RemoveAll(project.OutputFolder)
+
 	for _, chartManifest := range project.Charts {
-		chart, err := chart.LoadChart(chartManifest.Path, chartManifest.AdditionlValues)
+		chart, err := chart.LoadChart(chartManifest.Path, chartManifest.AppVersion, chartManifest.AdditionlValues)
 		if err != nil {
 			return err
 		}
@@ -50,7 +53,7 @@ func Run(projectFilePath string) error {
 			return err
 		}
 
-		if err = chart.SubstituteAppVersion(chartManifest.AppVersion); err != nil {
+		if err = chart.SubstituteAppVersion(project.OutputFolder, chartManifest.AppVersion); err != nil {
 			return err
 		}
 	}

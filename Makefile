@@ -2,6 +2,7 @@ BINDIR       := $(CURDIR)/bin
 INSTALL_PATH ?= /usr/local/bin
 BINNAME      ?= helmproj
 BUILDDIR     ?= build
+TMPNAME      := $(CURDIR)/tmp
 BUILDTIME    := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 # git
@@ -86,6 +87,7 @@ cover:
 clean:
 	@rm -rf '$(BINDIR)'
 	@rm -rf '$(EXAMPNAME)/$(RENDRNAME)'
+	@rm -rf '$(TMPNAME)'
 
 # ------------------------------------------------------------------------------
 #  example-run
@@ -100,7 +102,7 @@ example-run:
 #  example-clear
 
 .PHONY: example-clear
-example-clear:
+example-clear: clean
 	@helm uninstall $(S1NAME) -n $(NSNAME)
 	@helm uninstall $(S2NAME) -n $(NSNAME)
 	@kubectl delete ns $(NSNAME)

@@ -27,38 +27,51 @@ package chart
 import (
 	"path/filepath"
 
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/tree"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/yaml"
 )
 
-// Values describes the values.yaml file with replaceble pairs.
-type Values struct {
+type values struct {
 	name             string
 	values           map[string]interface{}
 	replaceablePairs []tree.ReplaceablePair
 }
 
+// Values describes the values.yaml file with replaceble pairs.
+type Values interface {
+	SubstituteValues(yamlTree map[string]interface{}) error
+	SaveTo(chartPath, outputFolder string) error
+}
+
 // LoadValuesFile returns the model of the values file.
-func (values *Values) LoadValuesFile(filePath string) error {
+func LoadValuesFile(filePath string) (Values, error) {
+	values := &values{}
+
 	replaceablePairs, err := tree.GetReplaceablePairs(filePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	values.replaceablePairs = replaceablePairs
 
 	values.name = filepath.Base(filePath)
 
+	filePath, err = io.GetRuntimeFilePath(filePath)
+	if err != nil {
+		return nil, err
+	}
+
 	var valuesYaml map[string]interface{}
 	if err := yaml.UnmarshalFromFile(filePath, &valuesYaml); err != nil {
-		return err
+		return nil, err
 	}
 	values.values = valuesYaml
 
-	return nil
+	return values, nil
 }
 
 // SubstituteValues substitutes values from the project file according to macros in values file.
-func (values *Values) SubstituteValues(yamlTree map[string]interface{}) error {
+func (values *values) SubstituteValues(yamlTree map[string]interface{}) error {
 	for _, replaceablePair := range values.replaceablePairs {
 		projectValue, err := tree.GetNodeByPath(replaceablePair.ProjectPath, yamlTree)
 		if err != nil {
@@ -74,7 +87,13 @@ func (values *Values) SubstituteValues(yamlTree map[string]interface{}) error {
 }
 
 // SaveTo serializes values to the specified folder.
-func (values *Values) SaveTo(chartPath, outputFolder string) error {
+func (values *values) SaveTo(chartPath, outputFolder string) error {
 	chartDir := filepath.Base(chartPath)
-	return yaml.MarshalToFile(outputFolder+"/"+chartDir+"/"+values.name, values.values)
+
+	filePath, err := io.GetRuntimeFilePath(filepath.Join(outputFolder, chartDir, values.name))
+	if err != nil {
+		return err
+	}
+
+	return yaml.MarshalToFile(filePath, values.values)
 }

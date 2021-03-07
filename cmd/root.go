@@ -25,6 +25,7 @@ SOFTWARE.
 package cmd
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/spf13/cobra"
@@ -77,7 +78,8 @@ func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 }
 
 func runRootCmd(out io.Writer, args []string) {
-	//preprocessor.Run(projFilePath)
-	//preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\charts\\project.yaml")
-	preprocessor.Run("C:\\SourceCode2\\helmproj\\examples\\project.yaml") // REMOVE
+	err := preprocessor.Run(projFilePath)
+	if err != nil {
+		fmt.Fprintln(out, err)
+	}
 }

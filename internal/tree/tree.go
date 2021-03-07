@@ -33,6 +33,8 @@ import (
 	"strings"
 
 	"gopkg.in/karalabe/cookiejar.v2/collections/stack"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 )
 
 // ReplaceablePair describes the structure of paths to replaceable pairs.
@@ -70,6 +72,11 @@ var VariableRegexp = regexp.MustCompile(".+:")
 // result[2] = { "tree", "map" }    -> { "someval" }
 func GetReplaceablePairs(valuesFilePath string) ([]ReplaceablePair, error) {
 	var replaceablePairs []ReplaceablePair
+
+	valuesFilePath, err := io.GetRuntimeFilePath(valuesFilePath)
+	if err != nil {
+		return nil, err
+	}
 
 	valuesFile, err := os.Open(valuesFilePath)
 	if err != nil {

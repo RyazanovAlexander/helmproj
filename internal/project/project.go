@@ -25,6 +25,7 @@ SOFTWARE.
 package project
 
 import (
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/yaml"
 )
 
@@ -45,6 +46,11 @@ type ChartManifest struct {
 
 // LoadProjectFile returns the model of the project file.
 func LoadProjectFile(filePath string) (*Project, error) {
+	filePath, err := io.GetRuntimeFilePath(filePath)
+	if err != nil {
+		return nil, err
+	}
+
 	project := Project{}
 	if err := yaml.UnmarshalFromFile(filePath, &project); err != nil {
 		return nil, err

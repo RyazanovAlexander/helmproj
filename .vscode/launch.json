@@ -13,7 +13,7 @@
             "env": {
                 "HELMPROJ_DEBUG": true
             },
-            "args": [],
+            "args": ["-f ./examples/project.yaml"],
             "showLog": true
         },
         {

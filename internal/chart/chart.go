@@ -26,32 +26,54 @@ package chart
 
 import (
 	"errors"
-	"os"
+	"fmt"
+	"io/ioutil"
 	"path/filepath"
+	"regexp"
+	"strings"
 
 	"github.com/otiai10/copy"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 )
 
 // DefaultValuesFile contains the name of a standard file with values.
 const DefaultValuesFile string = "values.yaml"
 
-// Chart describes the Chart
-type Chart struct {
-	path   string
-	values []Values
+// ChartFileName is a default chart file name.
+const ChartFileName string = "Chart.yaml"
+
+// AppVersionTemplate describes the template for the variable appversion in Chart.yaml file.
+const AppVersionTemplate string = "appVersion: %s"
+
+// ProjectMacrosRegexp is a regular expression to search for a chart version in Chart.yaml file.
+var ProjectMacrosRegexp = regexp.MustCompile(".*appVersion:.*(\r\n|\r|\n|)")
+
+type chart struct {
+	path       string
+	appVersion string
+	values     []Values
+}
+
+// Chart describes the Chart and defines the available operations in relation to it
+type Chart interface {
+	SubstituteValues(outputFolder string, tree map[string]interface{}) error
+	SubstituteAppVersion(outputFolder, appVersion string) error
+	CopyTo(toPath string) error
 }
 
 // LoadChart returns the model of the chart.
-func LoadChart(chartPath string, additionValuesFiles []string) (*Chart, error) {
-	chart := &Chart{}
+func LoadChart(chartPath, appVersion string, additionValuesFiles []string) (Chart, error) {
+	chart := &chart{}
 	chart.path = chartPath
+	chart.appVersion = appVersion
 	chart.loadValuesFiles(chartPath, additionValuesFiles)
 
 	return chart, nil
 }
 
 // SubstituteValues substitutes values from the project file according to macros in values file.
-func (chart *Chart) SubstituteValues(outputFolder string, tree map[string]interface{}) error {
+func (chart *chart) SubstituteValues(outputFolder string, tree map[string]interface{}) error {
 	for _, values := range chart.values {
 		err := values.SubstituteValues(tree)
 		if err != nil {
@@ -65,37 +87,59 @@ func (chart *Chart) SubstituteValues(outputFolder string, tree map[string]interf
 }
 
 // SubstituteAppVersion substitutes appVersion from the project file.
-func (chart *Chart) SubstituteAppVersion(appVersion string) error {
-
-	return nil
-}
-
-// CopyTo copies the chart along the specified path.
-func (chart *Chart) CopyTo(toPath string) error {
-	if len(toPath) == 0 {
-		return errors.New("Invalid parameter value passed: param - 'path', len(path) = 0")
-	}
-
-	err := os.RemoveAll(toPath)
+func (chart *chart) SubstituteAppVersion(outputFolder, appVersion string) error {
+	chartDir := filepath.Base(chart.path)
+	chartFilePath, err := io.GetRuntimeFilePath(filepath.Join(outputFolder, chartDir, ChartFileName))
 	if err != nil {
 		return err
 	}
 
-	chartDir := filepath.Base(chart.path)
+	fileContent, err := ioutil.ReadFile(chartFilePath)
+	if err != nil {
+		return err
+	}
 
-	return copy.Copy(chart.path, toPath+"/"+chartDir)
+	location := ProjectMacrosRegexp.FindIndex(fileContent)
+	if location == nil {
+		return errors.New("appVersion section not found in Chart.yaml file")
+	}
+
+	oldString := fileContent[location[0]:location[1]]
+	newString := fmt.Sprintf(AppVersionTemplate, chart.appVersion)
+
+	newContent := strings.Replace(string(fileContent), string(oldString), newString, 1)
+	return io.WriteToFile(chartFilePath, newContent)
 }
 
-func (chart *Chart) loadValuesFiles(chartPath string, additionValuesFiles []string) error {
-	valuesFiles := []string{chartPath + "/" + DefaultValuesFile}
+// CopyTo copies the chart along the specified path.
+func (chart *chart) CopyTo(toPath string) error {
+	if len(toPath) == 0 {
+		return errors.New("Invalid parameter value passed: param - 'path', len(path) = 0")
+	}
+
+	toPath, err := io.GetRuntimeFilePath(toPath)
+	if err != nil {
+		return err
+	}
+
+	src, err := io.GetRuntimeFilePath(chart.path)
+	if err != nil {
+		return err
+	}
+
+	dest := filepath.Join(toPath, filepath.Base(chart.path))
+	return copy.Copy(src, dest)
+}
+
+func (chart *chart) loadValuesFiles(chartPath string, additionValuesFiles []string) error {
+	valuesFiles := []string{filepath.Join(chartPath, DefaultValuesFile)}
 
 	for _, filePath := range additionValuesFiles {
-		valuesFiles = append(valuesFiles, chartPath+"/"+filePath)
+		valuesFiles = append(valuesFiles, filepath.Join(chartPath, filePath))
 	}
 
 	for _, filePath := range valuesFiles {
-		values := Values{}
-		err := values.LoadValuesFile(filePath)
+		values, err := LoadValuesFile(filePath)
 
 		if err != nil {
 			return err
