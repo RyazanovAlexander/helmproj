@@ -74,6 +74,7 @@ func (values *Values) SubstituteValues(yamlTree map[string]interface{}) error {
 }
 
 // SaveTo serializes values to the specified folder.
-func (values *Values) SaveTo(outputFolder string) error {
-	return yaml.MarshalToFile(outputFolder+"/"+values.name, values.values)
+func (values *Values) SaveTo(chartPath, outputFolder string) error {
+	chartDir := filepath.Base(chartPath)
+	return yaml.MarshalToFile(outputFolder+"/"+chartDir+"/"+values.name, values.values)
 }

@@ -42,7 +42,7 @@ type ReplaceablePair struct {
 }
 
 // ProjectMacrosRegexp is a regular expression to search for a macro with a project.
-var ProjectMacrosRegexp = regexp.MustCompile("# *{{ .Project.*}}(\r\n|\r|\n|)")
+var ProjectMacrosRegexp = regexp.MustCompile("# *{{ *.Project.*}}(\r\n|\r|\n|)")
 
 // CommentRegexp is a regex to find comments.
 var CommentRegexp = regexp.MustCompile("^ *#")
@@ -85,10 +85,10 @@ func GetReplaceablePairs(valuesFilePath string) ([]ReplaceablePair, error) {
 
 		var projectPath []string
 
-		projectMacrose := ProjectMacrosRegexp.FindStringSubmatch(line)
+		projectMacros := ProjectMacrosRegexp.FindStringSubmatch(line)
 		comment := CommentRegexp.FindStringSubmatch(line)
-		if projectMacrose != nil {
-			projectPath = getPath(projectMacrose[0])
+		if projectMacros != nil {
+			projectPath = getPath(projectMacros[0])
 		} else if comment != nil {
 			continue
 		}

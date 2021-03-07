@@ -30,14 +30,17 @@ import (
 
 // Project describes the structure of the project file.
 type Project struct {
-	Values map[string]interface{} `yaml:"values"`
-	Charts []struct {
-		Name            string   `yaml:"name"`
-		Path            string   `yaml:"path"`
-		AppVersion      string   `yaml:"appVersion"`
-		AdditionlValues []string `yaml:"additionlValues"`
-	} `yaml:"charts"`
-	OutputFolder string `yaml:"outputFolder"`
+	Values       map[string]interface{} `yaml:"values"`
+	Charts       []ChartManifest        `yaml:"charts"`
+	OutputFolder string                 `yaml:"outputFolder"`
+}
+
+// ChartManifest describes the structure of the chart.
+type ChartManifest struct {
+	Name            string   `yaml:"name"`
+	Path            string   `yaml:"path"`
+	AppVersion      string   `yaml:"appVersion"`
+	AdditionlValues []string `yaml:"additionlValues"`
 }
 
 // LoadProjectFile returns the model of the project file.

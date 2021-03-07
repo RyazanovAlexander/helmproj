@@ -38,7 +38,7 @@ GOOS   := linux
 GOARCH := amd64
 
 # Rebuild the buinary if any of these files change
-SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
+SRC := $(shell find . -type f -name "*.go" -print) go.mod go.sum
 
 # ------------------------------------------------------------------------------
 #  run

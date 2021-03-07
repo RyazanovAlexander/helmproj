@@ -36,8 +36,8 @@ func Run(projectFilePath string) error {
 		return err
 	}
 
-	for _, projectChart := range project.Charts {
-		chart, err := chart.LoadChart(projectChart.Path, projectChart.AdditionlValues)
+	for _, chartManifest := range project.Charts {
+		chart, err := chart.LoadChart(chartManifest.Path, chartManifest.AdditionlValues)
 		if err != nil {
 			return err
 		}
@@ -50,7 +50,7 @@ func Run(projectFilePath string) error {
 			return err
 		}
 
-		if err = chart.SubstituteAppVersion(projectChart.AppVersion); err != nil {
+		if err = chart.SubstituteAppVersion(chartManifest.AppVersion); err != nil {
 			return err
 		}
 	}

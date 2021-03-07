@@ -25,7 +25,9 @@ SOFTWARE.
 package chart
 
 import (
+	"errors"
 	"os"
+	"path/filepath"
 
 	"github.com/otiai10/copy"
 )
@@ -35,12 +37,14 @@ const DefaultValuesFile string = "values.yaml"
 
 // Chart describes the Chart
 type Chart struct {
+	path   string
 	values []Values
 }
 
 // LoadChart returns the model of the chart.
 func LoadChart(chartPath string, additionValuesFiles []string) (*Chart, error) {
 	chart := &Chart{}
+	chart.path = chartPath
 	chart.loadValuesFiles(chartPath, additionValuesFiles)
 
 	return chart, nil
@@ -54,7 +58,7 @@ func (chart *Chart) SubstituteValues(outputFolder string, tree map[string]interf
 			return err
 		}
 
-		values.SaveTo(outputFolder)
+		values.SaveTo(chart.path, outputFolder)
 	}
 
 	return nil
@@ -67,22 +71,19 @@ func (chart *Chart) SubstituteAppVersion(appVersion string) error {
 }
 
 // CopyTo copies the chart along the specified path.
-func (chart *Chart) CopyTo(path string) error {
-	/*if len(path) == 0 {
+func (chart *Chart) CopyTo(toPath string) error {
+	if len(toPath) == 0 {
 		return errors.New("Invalid parameter value passed: param - 'path', len(path) = 0")
 	}
 
-	bytes, err := yaml.Marshal(values)
+	err := os.RemoveAll(toPath)
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(path, bytes, 0644)
-	if err != nil {
-		return err
-	}*/
+	chartDir := filepath.Base(chart.path)
 
-	return nil
+	return copy.Copy(chart.path, toPath+"/"+chartDir)
 }
 
 func (chart *Chart) loadValuesFiles(chartPath string, additionValuesFiles []string) error {
@@ -104,13 +105,4 @@ func (chart *Chart) loadValuesFiles(chartPath string, additionValuesFiles []stri
 	}
 
 	return nil
-}
-
-func copyChart(fromFolderPath, toFolderPath string) error {
-	err := os.RemoveAll(toFolderPath)
-	if err != nil {
-		return err
-	}
-
-	return copy.Copy(fromFolderPath, toFolderPath)
 }
