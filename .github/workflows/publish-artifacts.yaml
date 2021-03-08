@@ -1,0 +1,23 @@
+name: Publish artifacts
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:       
+  archive-build-artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Step 1 - Build
+        run: |
+          make build
+
+      - name: Step 2 - Test
+        run: |
+          make test
+    
+      - name: Step 3 - Publish
+        uses: actions/upload-artifact@v2
+        with: 
+          name: helmproj
+          path: bin/helmproj
