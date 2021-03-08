@@ -1,1 +1,34 @@
-Hello CLI. Project file path: ./project.yaml
+array:
+    - node1
+    - node2
+map:
+    - node1: val1
+      prop11: pv11
+    - node2: val2
+      prop21: pv21
+scalar: 1
+tree:
+    scalar: tree-scalar
+override: backend-prod-value
+apiVersion: v2
+name: backend
+type: application
+version: 1.0.0
+appVersion: 1.0.1array:
+    - node1
+    - node2
+map:
+    - node1: val1
+      prop11: pv11
+    - node2: val2
+      prop21: pv21
+override: dev
+scalar: 1
+tree:
+    scalar: tree-scalar
+override: frontend-prod-value
+apiVersion: v2
+name: frontend
+type: application
+version: 1.0.0
+appVersion: 1.0.2

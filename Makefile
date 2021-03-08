@@ -2,7 +2,9 @@ BINDIR       := $(CURDIR)/bin
 INSTALL_PATH ?= /usr/local/bin
 BINNAME      ?= helmproj
 BUILDDIR     ?= build
+PROFILEFILE  ?= profile
 TMPNAME      := $(CURDIR)/tmp
+TESTTMPNAME  := $(CURDIR)/cmd/testdata/tmp
 BUILDTIME    := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
 
 # git
@@ -88,29 +90,30 @@ clean:
 	@rm -rf '$(BINDIR)'
 	@rm -rf '$(EXAMPNAME)/$(RENDRNAME)'
 	@rm -rf '$(TMPNAME)'
+	@rm -rf '$(TESTTMPNAME)'
+	@rm -rf '$(PROFILEFILE)'
 
 # ------------------------------------------------------------------------------
-#  example-run
+#  example
 
-.PHONY: example-run
-example-run:
-    # TODO run helmproj
+.PHONY: example
+example:
 	#@helmproj -f '$(EXAMPNAME)/$(PROJFNAME)'
 	@skaffold run
 
 # ------------------------------------------------------------------------------
-#  example-clear
+#  example_clear
 
-.PHONY: example-clear
-example-clear: clean
+.PHONY: example_clear
+example_clear: clean
 	@helm uninstall $(S1NAME) -n $(NSNAME)
 	@helm uninstall $(S2NAME) -n $(NSNAME)
 	@kubectl delete ns $(NSNAME)
 
 # ------------------------------------------------------------------------------
-#  build-push-di
+#  build_push_di
 
-.PHONY: build-push-di
-build-push-di:
+.PHONY: build_push_di
+build_push_di:
 	@docker build --build-arg LDFLAGS="$(GOLDFLAGS)" --build-arg GOOS=$(GOOS) --build-arg GOARCH=$(GOARCH) -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
 	@docker push $(DRNAME):$(DTAG)

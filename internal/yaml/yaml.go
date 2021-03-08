@@ -27,6 +27,7 @@ package yaml
 import (
 	"io/ioutil"
 
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 	"gopkg.in/yaml.v3"
 )
 
@@ -52,9 +53,7 @@ func MarshalToFile(filePath string, object interface{}) error {
 		return err
 	}
 
-	if err := ioutil.WriteFile(filePath, bytes, 0644); err != nil {
-		return err
-	}
+	io.WriteToFile(filePath, bytes)
 
 	return nil
 }

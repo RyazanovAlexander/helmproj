@@ -22,18 +22,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package config
 
 import (
-	"testing"
+	"io"
+
+	"github.com/spf13/viper"
 )
 
-func TestRender(t *testing.T) {
-	tests := []TestCase{{
-		Name:   "default",
-		Cmd:    "--dry-run -f './testdata/project.yaml'",
-		Golden: "output/render.txt",
-	}}
+// Config is global object that holds all application level variables.
+var Config appConfig
 
-	RunTestCmd(t, tests)
+type appConfig struct {
+	DryRun bool
+	Out    io.Writer
+}
+
+// Load loads config from files
+func Load(path string) error {
+	viper.AddConfigPath(path)
+	viper.SetConfigName("app")
+	viper.SetConfigType("env")
+
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		return err
+	}
+
+	if err := viper.Unmarshal(&Config); err != nil {
+		return err
+	}
+
+	return nil
 }

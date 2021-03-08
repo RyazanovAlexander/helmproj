@@ -17,3 +17,4 @@
 /coverage
 /profile
 /tmp
+/cmd/testdata/tmp

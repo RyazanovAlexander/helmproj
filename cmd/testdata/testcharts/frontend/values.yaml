@@ -1,0 +1,11 @@
+array:
+    - node1
+    - node2
+map:
+    - node1: val1
+      prop11: pv11
+    - node2: val2
+      prop21: pv21
+scalar: 1
+tree:
+    scalar: tree-scalar

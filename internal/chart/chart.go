@@ -32,8 +32,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/otiai10/copy"
-
 	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
 )
 
@@ -108,7 +106,7 @@ func (chart *chart) SubstituteAppVersion(outputFolder, appVersion string) error 
 	newString := fmt.Sprintf(AppVersionTemplate, chart.appVersion)
 
 	newContent := strings.Replace(string(fileContent), string(oldString), newString, 1)
-	return io.WriteToFile(chartFilePath, newContent)
+	return io.WriteToFile(chartFilePath, []byte(newContent))
 }
 
 // CopyTo copies the chart along the specified path.
@@ -128,7 +126,7 @@ func (chart *chart) CopyTo(toPath string) error {
 	}
 
 	dest := filepath.Join(toPath, filepath.Base(chart.path))
-	return copy.Copy(src, dest)
+	return io.Copy(src, dest)
 }
 
 func (chart *chart) loadValuesFiles(chartPath string, additionValuesFiles []string) error {

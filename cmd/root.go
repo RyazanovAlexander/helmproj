@@ -30,6 +30,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/RyazanovAlexander/helmproj/v1/config"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/preprocessor"
 )
@@ -54,6 +55,9 @@ const DefaultProjectFilePath = "./project.yaml"
 // The path to the project file, passed as a command line argument.
 var projFilePath string
 
+// Test run. No files are generated. The output is carried out to the shell.
+var dryRun bool
+
 // NewRootCmd creates new root cmd.
 func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 	cmd := &cobra.Command{
@@ -65,6 +69,7 @@ func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 
 	flags := cmd.PersistentFlags()
 	flags.StringVarP(&projFilePath, "file", "f", DefaultProjectFilePath, "path to project file")
+	flags.BoolVarP(&dryRun, "dry-run", "d", false, "test run. No files are generated. The output is carried out to the shell")
 	flags.Parse(args)
 
 	cli.Settings.AddFlags(flags)
@@ -78,6 +83,9 @@ func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 }
 
 func runRootCmd(out io.Writer, args []string) {
+	config.Config.DryRun = dryRun
+	config.Config.Out = out
+
 	err := preprocessor.Run(projFilePath)
 	if err != nil {
 		fmt.Fprintln(out, err)
