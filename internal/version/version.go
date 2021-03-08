@@ -25,65 +25,43 @@ SOFTWARE.
 package version
 
 import (
-	"flag"
 	"runtime"
-	"strings"
 )
 
 var (
-	// version is the current version of Helmproj.
-	// Update this whenever making a new release.
-	// The version is of the format Major.Minor.Patch[-Prerelease][+BuildMetadata]
+	// Version is the current version of Helmproj.
+	// Version is passed as an external parameter when building the program.
+	// The version is of the format Major.Minor.Patch[-Prerelease].
 	//
 	// Increment major number for new feature additions and behavioral changes.
 	// Increment minor number for bug fixes and performance enhancements.
-	version = "v3.5"
+	Version = "v0.0.0"
 
-	// metadata is extra build time data
-	metadata = ""
-	// gitCommit is the git sha1
-	gitCommit = ""
-	// gitTreeState is the state of the git tree
-	gitTreeState = ""
+	// Buildtime is the build time of the program.
+	Buildtime = ""
+
+	// GitShortSHA is the git commit short sha1.
+	GitShortSHA = ""
 )
 
 // BuildInfo describes the compile time information.
 type BuildInfo struct {
 	// Version is the current semver.
 	Version string `json:"version,omitempty"`
-	// GitCommit is the git sha1.
-	GitCommit string `json:"git_commit,omitempty"`
+	// GitShortSHA is the git commit short sha1.
+	GitShortSHA string `json:"git_short_sha,omitempty"`
 	// GitTreeState is the state of the git tree.
-	GitTreeState string `json:"git_tree_state,omitempty"`
+	Buildtime string `json:"build_time,omitempty"`
 	// GoVersion is the version of the Go compiler used.
 	GoVersion string `json:"go_version,omitempty"`
 }
 
-// GetVersion returns the semver string of the version
-func GetVersion() string {
-	if metadata == "" {
-		return version
+// GetBuildInfo returns build info
+func GetBuildInfo() BuildInfo {
+	return BuildInfo{
+		Version:     Version,
+		GitShortSHA: GitShortSHA,
+		Buildtime:   Buildtime,
+		GoVersion:   runtime.Version(),
 	}
-	return version + "+" + metadata
-}
-
-// GetUserAgent returns a user agent for user with an HTTP client
-func GetUserAgent() string {
-	return "Helm/" + strings.TrimPrefix(GetVersion(), "v")
-}
-
-// Get returns build info
-func Get() BuildInfo {
-	v := BuildInfo{
-		Version:      GetVersion(),
-		GitCommit:    gitCommit,
-		GitTreeState: gitTreeState,
-		GoVersion:    runtime.Version(),
-	}
-
-	// HACK(bacongobbler): strip out GoVersion during a test run for consistent test output
-	if flag.Lookup("test.v") != nil {
-		v.GoVersion = ""
-	}
-	return v
 }

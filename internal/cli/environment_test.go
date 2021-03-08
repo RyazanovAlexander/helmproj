@@ -23,3 +23,45 @@ SOFTWARE.
 */
 
 package cli
+
+import (
+	"os"
+	"strconv"
+	"testing"
+
+	"github.com/spf13/cobra"
+
+	"github.com/RyazanovAlexander/helmproj/v1/internal/test"
+)
+
+func TestNewSettings(t *testing.T) {
+	defer test.ResetEnv()
+
+	expected := true
+	os.Setenv(HelmprojDebug, strconv.FormatBool(expected))
+	settings := NewSettings()
+
+	if expected != settings.Debug {
+		t.Errorf("Debug = %v; want %v", settings.Debug, expected)
+	}
+}
+
+func TestAddFlags(t *testing.T) {
+	defer test.ResetEnv()
+
+	expected := true
+	os.Setenv(HelmprojDebug, strconv.FormatBool(expected))
+
+	cmd := &cobra.Command{}
+	flags := cmd.PersistentFlags()
+	if flags.HasFlags() != false {
+		t.Errorf("The flags structure is incorrectly initialized")
+	}
+
+	settings := NewSettings()
+	settings.AddFlags(flags)
+
+	if flags.HasFlags() != true {
+		t.Errorf("Failed to retrieve flag")
+	}
+}

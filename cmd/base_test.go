@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package test
+package cmd
 
 import (
 	"bytes"
@@ -32,11 +32,11 @@ import (
 	shellwords "github.com/mattn/go-shellwords"
 	"github.com/spf13/cobra"
 
-	appCmd "github.com/RyazanovAlexander/helmproj/v1/cmd"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/test"
 )
 
-// CmdTestCase describes a test case that works with releases.
-type CmdTestCase struct {
+// TestCase describes a test case that works with releases.
+type TestCase struct {
 	Name      string
 	Cmd       string
 	Golden    string
@@ -45,12 +45,14 @@ type CmdTestCase struct {
 }
 
 // RunTestCmd runs the specified test cases
-func RunTestCmd(t *testing.T, tests []CmdTestCase) {
+func RunTestCmd(t *testing.T, tests []TestCase) {
 	t.Helper()
 
 	for _, testCase := range tests {
 		for i := 0; i <= testCase.Repeat; i++ {
 			t.Run(testCase.Name, func(t *testing.T) {
+				defer test.ResetEnv()()
+
 				t.Logf("running cmd (attempt %d): %s", i+1, testCase.Cmd)
 				_, out, err := executeActionCommandC(testCase.Cmd)
 
@@ -59,7 +61,7 @@ func RunTestCmd(t *testing.T, tests []CmdTestCase) {
 				}
 
 				if testCase.Golden != "" {
-					AssertGoldenString(t, out, testCase.Golden)
+					test.AssertGoldenString(t, out, testCase.Golden)
 				}
 			})
 		}
@@ -67,33 +69,21 @@ func RunTestCmd(t *testing.T, tests []CmdTestCase) {
 }
 
 func executeActionCommandC(cmd string) (*cobra.Command, string, error) {
-	return executeActionCommandStdinC(nil, cmd)
-}
-
-func executeActionCommandStdinC(in *os.File, cmd string) (*cobra.Command, string, error) {
 	args, err := shellwords.Parse(cmd)
 	if err != nil {
 		return nil, "", err
 	}
 
 	buf := new(bytes.Buffer)
+	rootCmd := NewRootCmd(buf, args)
 
-	root, err := appCmd.NewRootCmd(buf, args)
-	if err != nil {
-		return nil, "", err
-	}
-
-	root.SetOut(buf)
-	root.SetErr(buf)
-	root.SetArgs(args)
+	rootCmd.SetOut(buf)
+	rootCmd.SetErr(buf)
+	rootCmd.SetArgs(args)
 
 	oldStdin := os.Stdin
-	if in != nil {
-		root.SetIn(in)
-		os.Stdin = in
-	}
 
-	command, err := root.ExecuteC()
+	command, err := rootCmd.ExecuteC()
 	result := buf.String()
 	os.Stdin = oldStdin
 

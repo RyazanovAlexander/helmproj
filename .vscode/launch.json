@@ -10,8 +10,10 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
-            "env": {},
-            "args": [],
+            "env": {
+                "HELMPROJ_DEBUG": true
+            },
+            "args": ["-f ./examples/project.yaml"],
             "showLog": true
         },
         {

@@ -22,24 +22,41 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package preprocessor
 
 import (
-	"testing"
-
-	"github.com/RyazanovAlexander/helmproj/v1/internal/version"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/chart"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/project"
 )
 
-func TestVersion(t *testing.T) {
-	tests := []TestCase{{
-		Name:   "default",
-		Cmd:    "version",
-		Golden: "output/version.txt",
-	}}
+// Run runs preprocessing
+func Run(projectFilePath string) error {
+	project, err := project.LoadProjectFile(projectFilePath)
+	if err != nil {
+		return err
+	}
 
-	version.Version = "1.0.0"
-	version.Buildtime = "2021-02-24T11:45:00Z"
-	version.GitShortSHA = "4666021"
+	io.RemoveAll(project.OutputFolder)
 
-	RunTestCmd(t, tests)
+	for _, chartManifest := range project.Charts {
+		chart, err := chart.LoadChart(chartManifest.Path, chartManifest.AppVersion, chartManifest.AdditionlValues)
+		if err != nil {
+			return err
+		}
+
+		if err = chart.CopyTo(project.OutputFolder); err != nil {
+			return err
+		}
+
+		if err = chart.SubstituteValues(project.OutputFolder, project.Values); err != nil {
+			return err
+		}
+
+		if err = chart.SubstituteAppVersion(project.OutputFolder, chartManifest.AppVersion); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -1,18 +1,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: backend
   labels:
-    app.kubernetes.io/component: frontend
+    app.kubernetes.io/component: backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: frontend
+      app.kubernetes.io/component: backend
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: frontend
+        app.kubernetes.io/component: backend
     spec:
       nodeSelector:
         beta.kubernetes.io/os: linux
@@ -22,10 +22,10 @@ spec:
           command:
             - /bin/sh
             - '-c'
-            - 'while printf "chart appVersion: {{ .Chart.AppVersion }}\nscalar: $SCALAR\ntree scalar: $TREE_SCALAR\narray: $ARRAY\nmap: $MAP\noverride: $OVERRIDE\n---\n"; sleep 1; do :; done'
+            - 'while printf "chart appVersion: {{ .Chart.AppVersion }}\nscalar: $SCALAR\ntree scalar: $TREE_SCALAR\narray: $ARRAY\nmap: $MAP\nnoverride: $OVERRIDE\n---\n"; sleep 1; do :; done'
           env:
             - name: SCALAR
-              value: '{{ .Values.scalar }}'
+              value: {{ .Values.scalar }}
             - name: TREE_SCALAR
               value: {{ .Values.tree.scalar }}
             - name: ARRAY
@@ -33,4 +33,4 @@ spec:
             - name: MAP
               value: "{{ .Values.map }}"
             - name: OVERRIDE
-              value: '{{ .Values.override }}'
+              value: {{ .Values.override }}

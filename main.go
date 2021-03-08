@@ -25,33 +25,17 @@ SOFTWARE.
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/RyazanovAlexander/helmproj/v1/cmd"
-	"github.com/RyazanovAlexander/helmproj/v1/internal/flog"
 )
-
-var Version string
-var Buildtime string
 
 func init() {
 	log.SetFlags(log.Lshortfile)
 }
 
 func main() {
-	os.Stdout.WriteString(fmt.Sprintf("Version: %s\n", Version))
-	os.Stdout.WriteString(fmt.Sprintf("Buildtime: %s\n", Buildtime))
-
-	cmd, err := cmd.NewRootCmd(os.Stdout, os.Args[1:])
-	if err != nil {
-		flog.WarningF("%+v", err)
-		os.Exit(1)
-	}
-
-	if err := cmd.Execute(); err != nil {
-		flog.DebugF("%+v", err)
-		os.Exit(1)
-	}
+	rootCmd := cmd.NewRootCmd(os.Stdout, os.Args[1:])
+	rootCmd.Execute()
 }

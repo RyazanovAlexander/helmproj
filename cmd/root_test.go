@@ -26,16 +26,14 @@ package cmd
 
 import (
 	"testing"
-
-	"github.com/RyazanovAlexander/helmproj/v1/internal/test"
 )
 
 func TestRender(t *testing.T) {
-	tests := []test.CmdTestCase{{
+	tests := []TestCase{{
 		Name:   "default",
-		Cmd:    "",
+		Cmd:    "--dry-run -f './testdata/project.yaml'",
 		Golden: "output/render.txt",
 	}}
 
-	test.RunTestCmd(t, tests)
+	RunTestCmd(t, tests)
 }

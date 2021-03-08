@@ -30,7 +30,9 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/RyazanovAlexander/helmproj/v1/config"
 	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/preprocessor"
 )
 
 var globalUsage = `This application is a tool for preprocessing values.yaml and Chart.yaml files.
@@ -47,11 +49,17 @@ Environment variables:
 | $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode                         |
 `
 
-// The path to the project file, passed as a command line argument
+// DefaultProjectFilePath is the path to the default project file.
+const DefaultProjectFilePath = "./project.yaml"
+
+// The path to the project file, passed as a command line argument.
 var projFilePath string
 
-// NewRootCmd creates new root cmd
-func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
+// Test run. No files are generated. The output is carried out to the shell.
+var dryRun bool
+
+// NewRootCmd creates new root cmd.
+func NewRootCmd(out io.Writer, args []string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "helmproj",
 		Short: "Preprocessor for Helm Charts",
@@ -60,7 +68,8 @@ func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
 	}
 
 	flags := cmd.PersistentFlags()
-	flags.StringVarP(&projFilePath, "file", "f", "./project.yaml", "path to project file")
+	flags.StringVarP(&projFilePath, "file", "f", DefaultProjectFilePath, "path to project file")
+	flags.BoolVarP(&dryRun, "dry-run", "d", false, "test run. No files are generated. The output is carried out to the shell")
 	flags.Parse(args)
 
 	cli.Settings.AddFlags(flags)
@@ -70,10 +79,15 @@ func NewRootCmd(out io.Writer, args []string) (*cobra.Command, error) {
 		newVersionCmd(out),
 	)
 
-	return cmd, nil
+	return cmd
 }
 
 func runRootCmd(out io.Writer, args []string) {
-	a := fmt.Sprintf("Hello CLI. Project file path: %s", projFilePath)
-	fmt.Fprintln(out, a)
+	config.Config.DryRun = dryRun
+	config.Config.Out = out
+
+	err := preprocessor.Run(projFilePath)
+	if err != nil {
+		fmt.Fprintln(out, err)
+	}
 }

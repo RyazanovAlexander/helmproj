@@ -22,24 +22,38 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package yaml
 
 import (
-	"testing"
+	"io/ioutil"
 
-	"github.com/RyazanovAlexander/helmproj/v1/internal/version"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
+	"gopkg.in/yaml.v3"
 )
 
-func TestVersion(t *testing.T) {
-	tests := []TestCase{{
-		Name:   "default",
-		Cmd:    "version",
-		Golden: "output/version.txt",
-	}}
+// UnmarshalFromFile deserializes the yaml file to the specified data type.
+func UnmarshalFromFile(filePath string, object interface{}) error {
+	sourceYaml, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return err
+	}
 
-	version.Version = "1.0.0"
-	version.Buildtime = "2021-02-24T11:45:00Z"
-	version.GitShortSHA = "4666021"
+	err = yaml.Unmarshal(sourceYaml, object)
+	if err != nil {
+		return err
+	}
 
-	RunTestCmd(t, tests)
+	return nil
+}
+
+// MarshalToFile serialises the specified data type to the yaml file.
+func MarshalToFile(filePath string, object interface{}) error {
+	bytes, err := yaml.Marshal(object)
+	if err != nil {
+		return err
+	}
+
+	io.WriteToFile(filePath, bytes)
+
+	return nil
 }

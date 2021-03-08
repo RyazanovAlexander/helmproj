@@ -29,10 +29,8 @@ import (
 	"io"
 
 	"github.com/spf13/cobra"
-)
 
-var (
-	version = "v1.0.0"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/version"
 )
 
 func newVersionCmd(out io.Writer) *cobra.Command {
@@ -47,5 +45,5 @@ func newVersionCmd(out io.Writer) *cobra.Command {
 }
 
 func runVersionCmd(out io.Writer, args []string) {
-	fmt.Fprintln(out, version)
+	fmt.Fprintln(out, fmt.Sprintf("%#v", version.GetBuildInfo()))
 }

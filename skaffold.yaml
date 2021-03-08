@@ -6,8 +6,8 @@ deploy:
     - name: frontend
       namespace: example
       createNamespace: true
-      chartPath: examples/rendered/frontend
+      chartPath: tmp/rendered/frontend
     - name: backend
       namespace: example
       createNamespace: true
-      chartPath: examples/rendered/backend
+      chartPath: tmp/rendered/backend

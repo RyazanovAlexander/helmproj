@@ -22,26 +22,42 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package flog
+package version
 
 import (
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/RyazanovAlexander/helmproj/v1/internal/cli"
+	"encoding/json"
+	"runtime"
+	"testing"
+	"time"
 )
 
-// Debug message template
-func DebugF(format string, v ...interface{}) {
-	if cli.Settings.Debug {
-		format = fmt.Sprintf("[debug] %s\n", format)
-		log.Output(2, fmt.Sprintf(format, v...))
-	}
-}
+func TestGetBuildInfo(t *testing.T) {
+	Version = "v.test"
+	Buildtime = time.Now().String()
+	GitShortSHA = "ABC123"
 
-// Warning message template
-func WarningF(format string, v ...interface{}) {
-	format = fmt.Sprintf("WARNING: %s\n", format)
-	fmt.Fprintf(os.Stderr, format, v...)
+	expected := BuildInfo{
+		Version:     Version,
+		GitShortSHA: GitShortSHA,
+		Buildtime:   Buildtime,
+		GoVersion:   runtime.Version(),
+	}
+
+	expectedBytes, err := json.Marshal(expected)
+	if err != nil {
+		t.Errorf("Failed to marshal expected struct: %v", err)
+	}
+
+	got := GetBuildInfo()
+	gotBytes, err := json.Marshal(got)
+	if err != nil {
+		t.Errorf("Failed to marshal go struct: %v", err)
+	}
+
+	expectedString := string(expectedBytes)
+	gotString := string(gotBytes)
+
+	if expectedString != gotString {
+		t.Errorf("Got %v, expected %v", gotString, expectedString)
+	}
 }

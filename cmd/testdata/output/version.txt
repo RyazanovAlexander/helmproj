@@ -1,1 +1,1 @@
-v1.0.0
+version.BuildInfo{Version:"1.0.0", GitShortSHA:"4666021", Buildtime:"2021-02-24T11:45:00Z", GoVersion:"go1.16rc1"}

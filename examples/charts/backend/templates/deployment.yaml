@@ -22,17 +22,15 @@ spec:
           command:
             - /bin/sh
             - '-c'
-            - 'while printf "chart appVersion: {{ .Chart.AppVersion }}\nscalar: $SCALAR\ntree scalar: $TREE_SCALAR\narray: $ARRAY\nmap: $MAP\ncontent: $CONTENT\noverride: $OVERRIDE\n---\n"; sleep 1; do :; done'
+            - 'while printf "chart appVersion: {{ .Chart.AppVersion }}\nscalar: $SCALAR\ntree scalar: $TREE_SCALAR\narray: $ARRAY\nmap: $MAP\nnoverride: $OVERRIDE\n---\n"; sleep 1; do :; done'
           env:
             - name: SCALAR
-              value: {{ .Values.scalar }}
+              value: '{{ .Values.scalar }}'
             - name: TREE_SCALAR
               value: {{ .Values.tree.scalar }}
             - name: ARRAY
               value: "{{ .Values.array }}"
             - name: MAP
               value: "{{ .Values.map }}"
-            - name: CONTENT
-              value: "{{ .Values.tree.content }}"
             - name: OVERRIDE
-              value: {{ .Values.override }}
+              value: '{{ .Values.override }}'

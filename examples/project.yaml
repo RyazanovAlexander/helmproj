@@ -1,25 +1,28 @@
 values:
   scalar: 1
-  prod: prod-value
+  tree:
+    scalar: tree-scalar
   array:
     - node1
     - node2
   map:
     - node1: val1
+      prop11: pv11
     - node2: val2
-  tree:
-    scalar: tree-scalar
+      prop21: pv21
   frontend:
-    content: |-
-      frontend project content
+    prod: frontend-prod-value
   backend:
-    content: |-
-      backend project content
+    prod: backend-prod-value
 charts:
   - name: rendered-frontend
-    path: ./charts/frontend
+    path: ./examples/charts/frontend
+    additionlValues:
+      - values.prod.yaml
     appVersion: 1.0.1
   - name: rendered-backend
-    path: ./charts/backend
+    path: ./examples/charts/backend
+    additionlValues:
+      - values.prod.yaml
     appVersion: 1.0.2
-outputFolder: ./rendered
+outputFolder: ./tmp/rendered

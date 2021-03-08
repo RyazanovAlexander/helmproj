@@ -2,9 +2,17 @@ BINDIR       := $(CURDIR)/bin
 INSTALL_PATH ?= /usr/local/bin
 BINNAME      ?= helmproj
 BUILDDIR     ?= build
+PROFILEFILE  ?= profile
+TMPNAME      := $(CURDIR)/tmp
+TESTTMPNAME  := $(CURDIR)/cmd/testdata/tmp
+BUILDTIME    := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
+
+# git
+LASTTAG     := $(shell git tag --sort=committerdate | tail -1)
+GITSHORTSHA := $(shell git rev-parse --short HEAD)
 
 # docker option
-DTAG   ?= 1.0.0
+DTAG   ?= $(LASTTAG)
 DFNAME ?= Dockerfile
 DRNAME ?= docker.io/aryazanov/helmproj
 
@@ -22,11 +30,9 @@ TESTS      := .
 TESTFLAGS  :=
 TAGS       :=
 
-VERSION := $(shell git rev-parse --short HEAD)
-BUILDTIME := $(shell date -u '+%Y-%m-%dT%H:%M:%SZ')
-
-GOLDFLAGS += -X main.Version=$(VERSION)
-GOLDFLAGS += -X main.Buildtime=$(BUILDTIME)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.Version=$(LASTTAG)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.GitShortSHA=$(GITSHORTSHA)
+GOLDFLAGS += -X github.com/RyazanovAlexander/helmproj/v1/internal/version.Buildtime=$(BUILDTIME)
 GOLDFLAGS += -w
 GOLDFLAGS += -s
 GOFLAGS   = -ldflags '$(GOLDFLAGS)'
@@ -34,11 +40,8 @@ GOFLAGS   = -ldflags '$(GOLDFLAGS)'
 GOOS   := linux
 GOARCH := amd64
 
-# git
-LASTTAG := $(shell git tag --sort=committerdate | tail -1)
-
 # Rebuild the buinary if any of these files change
-SRC := $(shell find . -type f -name '*.go' -print) go.mod go.sum
+SRC := $(shell find . -type f -name "*.go" -print) go.mod go.sum
 
 # ------------------------------------------------------------------------------
 #  run
@@ -72,35 +75,45 @@ test:
 	GO111MODULE=on go test $(GOFLAGS) -run $(TESTS) $(PKG) $(TESTFLAGS)
 
 # ------------------------------------------------------------------------------
+#  cover
+
+.PHONY: cover
+cover:
+	go test -v -coverpkg=./... -coverprofile=profile ./...
+	go tool cover -html=profile
+
+# ------------------------------------------------------------------------------
 #  clean
 
 .PHONY: clean
 clean:
 	@rm -rf '$(BINDIR)'
 	@rm -rf '$(EXAMPNAME)/$(RENDRNAME)'
+	@rm -rf '$(TMPNAME)'
+	@rm -rf '$(TESTTMPNAME)'
+	@rm -rf '$(PROFILEFILE)'
 
 # ------------------------------------------------------------------------------
-#  example-run
+#  example
 
-.PHONY: example-run
-example-run:
-    # TODO run helmproj
+.PHONY: example
+example:
 	#@helmproj -f '$(EXAMPNAME)/$(PROJFNAME)'
 	@skaffold run
 
 # ------------------------------------------------------------------------------
-#  example-clear
+#  example_clear
 
-.PHONY: example-clear
-example-clear:
+.PHONY: example_clear
+example_clear: clean
 	@helm uninstall $(S1NAME) -n $(NSNAME)
 	@helm uninstall $(S2NAME) -n $(NSNAME)
 	@kubectl delete ns $(NSNAME)
 
 # ------------------------------------------------------------------------------
-#  build-push-di
+#  build_push_di
 
-.PHONY: build-push-di
-build-push-di:
+.PHONY: build_push_di
+build_push_di:
 	@docker build --build-arg LDFLAGS="$(GOLDFLAGS)" --build-arg GOOS=$(GOOS) --build-arg GOARCH=$(GOARCH) -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
 	@docker push $(DRNAME):$(DTAG)

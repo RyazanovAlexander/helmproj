@@ -31,8 +31,11 @@ import (
 	"github.com/spf13/pflag"
 )
 
+// HelmprojDebug is responsible for Debug mode
+const HelmprojDebug = "HELMPROJ_DEBUG"
+
 // Settings are application settings
-var Settings = New()
+var Settings = NewSettings()
 
 // EnvSettings describes all of the environment settings.
 type EnvSettings struct {
@@ -40,10 +43,10 @@ type EnvSettings struct {
 	Debug bool
 }
 
-// New creates new EnvSettings
-func New() *EnvSettings {
+// NewSettings creates new EnvSettings
+func NewSettings() *EnvSettings {
 	env := &EnvSettings{}
-	env.Debug, _ = strconv.ParseBool(os.Getenv("HELMPROJ_DEBUG"))
+	env.Debug, _ = strconv.ParseBool(os.Getenv(HelmprojDebug))
 
 	return env
 }

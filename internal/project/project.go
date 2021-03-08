@@ -22,24 +22,39 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-package cmd
+package project
 
 import (
-	"testing"
-
-	"github.com/RyazanovAlexander/helmproj/v1/internal/version"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/io"
+	"github.com/RyazanovAlexander/helmproj/v1/internal/yaml"
 )
 
-func TestVersion(t *testing.T) {
-	tests := []TestCase{{
-		Name:   "default",
-		Cmd:    "version",
-		Golden: "output/version.txt",
-	}}
+// Project describes the structure of the project file.
+type Project struct {
+	Values       map[string]interface{} `yaml:"values"`
+	Charts       []ChartManifest        `yaml:"charts"`
+	OutputFolder string                 `yaml:"outputFolder"`
+}
 
-	version.Version = "1.0.0"
-	version.Buildtime = "2021-02-24T11:45:00Z"
-	version.GitShortSHA = "4666021"
+// ChartManifest describes the structure of the chart.
+type ChartManifest struct {
+	Name            string   `yaml:"name"`
+	Path            string   `yaml:"path"`
+	AppVersion      string   `yaml:"appVersion"`
+	AdditionlValues []string `yaml:"additionlValues"`
+}
 
-	RunTestCmd(t, tests)
+// LoadProjectFile returns the model of the project file.
+func LoadProjectFile(filePath string) (*Project, error) {
+	filePath, err := io.GetRuntimeFilePath(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	project := Project{}
+	if err := yaml.UnmarshalFromFile(filePath, &project); err != nil {
+		return nil, err
+	}
+
+	return &project, nil
 }

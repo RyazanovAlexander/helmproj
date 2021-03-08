@@ -15,3 +15,6 @@
 # vendor/
 /bin
 /coverage
+/profile
+/tmp
+/cmd/testdata/tmp

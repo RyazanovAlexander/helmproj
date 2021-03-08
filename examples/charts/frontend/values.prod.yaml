@@ -1,1 +1,1 @@
-override: prod #{{ .Project.prod }}
+override: prod # {{ .Project.frontend.prod }}

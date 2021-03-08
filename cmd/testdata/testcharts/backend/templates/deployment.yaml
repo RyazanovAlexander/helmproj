@@ -25,7 +25,7 @@ spec:
             - 'while printf "chart appVersion: {{ .Chart.AppVersion }}\nscalar: $SCALAR\ntree scalar: $TREE_SCALAR\narray: $ARRAY\nmap: $MAP\noverride: $OVERRIDE\n---\n"; sleep 1; do :; done'
           env:
             - name: SCALAR
-              value: '{{ .Values.scalar }}'
+              value: {{ .Values.scalar }}
             - name: TREE_SCALAR
               value: {{ .Values.tree.scalar }}
             - name: ARRAY
@@ -33,4 +33,4 @@ spec:
             - name: MAP
               value: "{{ .Values.map }}"
             - name: OVERRIDE
-              value: '{{ .Values.override }}'
+              value: {{ .Values.override }}
