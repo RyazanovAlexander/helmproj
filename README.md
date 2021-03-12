@@ -140,9 +140,9 @@ Common actions for Helmproj:
 
 Environment variables:
 
-| Name                               | Description                                                          |
-|------------------------------------|----------------------------------------------------------------------|
-| $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode            |
+| Name                               | Description                                                         |
+|------------------------------------|---------------------------------------------------------------------|
+| $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode           |
 
 Usage:
   helmproj [flags]
