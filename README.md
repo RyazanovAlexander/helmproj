@@ -133,14 +133,16 @@ This application is a tool for preprocessing values.yaml and Chart.yaml files.
 
 Common actions for Helmproj:
 
-- helmproj:                           preprocessing helm charts based on information from the ./project.yaml file
-- helmproj -f ./path/to/project.yaml: preprocessing helm charts based on information from the project.yaml file located at the specified path
+- helmproj:                           preprocessing helm charts based on information from the ./project.yaml
+                                      file
+- helmproj -f ./path/to/project.yaml: preprocessing helm charts based on information from the project.yaml
+                                      file located at the specified path
 
 Environment variables:
 
-| Name                               | Description                                                                       |
-|------------------------------------|-----------------------------------------------------------------------------------|
-| $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode                         |
+| Name                               | Description                                                          |
+|------------------------------------|----------------------------------------------------------------------|
+| $HELMPROJ_DEBUG                    | indicate whether or not Helmprog is running in Debug mode            |
 
 Usage:
   helmproj [flags]
