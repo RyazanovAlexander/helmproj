@@ -6,14 +6,14 @@ A typical structure for a [Multi-repo](https://hackernoon.com/mono-repo-vs-multi
 ```
 project (git clone https://github.com/project-name/project)
 ├── skaffold.yaml
-├── **project.yaml**
+├── project.yaml
 └── Makefile (commands applied to all microservices)
 
 frontend (git clone https://github.com/project-name/frontend)
 ├── Makefile
 ├── src
 │    └── ...
-└── **helm**
+└── helm
     ├── ...
     ├── Chart.yaml
     ├── values.yaml
@@ -24,7 +24,7 @@ backend (git clone https://github.com/project-name/backend)
 ├── Makefile
 ├── src
 │    └── ...
-└── **helm**
+└── helm
     ├── ...
     ├── Chart.yaml
     ├── values.yaml
