@@ -124,7 +124,30 @@ To run the example with deploy, it’s necessary to install [Skaffold](https://s
 
 ## Running as a container
 
-TODO
+To run the helmproj in a container, copy the files from [helmproj/examples](https://github.com/RyazanovAlexander/helmproj/tree/main/examples) to `/tmp` on your computer.
+You should have the following directory structure:
+```
+/tmp
+├── charts
+│    └── ...
+└── project.container.yaml
+```
+
+Run the command:
+```
+linux:   docker run -it -v   /tmp:/data docker.io/aryazanov/helmproj:v1.0.0 -f /data/project.container.yaml
+windows: docker run -it -v c:/tmp:/data docker.io/aryazanov/helmproj:v1.0.0 -f /data/project.container.yaml
+```
+
+The rendered files should appear in the `/tmp` folder:
+```
+/tmp
+├── charts
+│    └── ...
+├── rendered
+│    └── ...
+└── project.container.yaml
+```
 
 ## CLI Reference
 
