@@ -98,7 +98,7 @@ clean:
 
 .PHONY: example
 example:
-	#@helmproj -f '$(EXAMPNAME)/$(PROJFNAME)'
+	@helmproj -f '$(EXAMPNAME)/$(PROJFNAME)'
 	@skaffold run
 
 # ------------------------------------------------------------------------------
@@ -111,9 +111,9 @@ example_clear: clean
 	@kubectl delete ns $(NSNAME)
 
 # ------------------------------------------------------------------------------
-#  build_push_di
+#  container
 
-.PHONY: build_push_di
-build_push_di:
+.PHONY: container
+container:
 	@docker build --build-arg LDFLAGS="$(GOLDFLAGS)" --build-arg GOOS=$(GOOS) --build-arg GOARCH=$(GOARCH) -t $(DRNAME):$(DTAG) -f ./$(BUILDDIR)/$(DFNAME) .
 	@docker push $(DRNAME):$(DTAG)
